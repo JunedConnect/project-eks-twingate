@@ -46,6 +46,6 @@ provider "kubernetes" {
 }
 
 provider "twingate" {
-  api_token = "xxxxxx" # make into a secret
+  api_token = "Dwx8oz3vbMTvlaFN7TORFgOMwp4UCuQMUrKK6E5vl6j_6pJumomRMV79nYLJgrwmfMqi43g2rWRFZQfOOBk7G-wU_TjWB_eN22PukGWXbIdjUupDsWr9-z0C0VtF8-Z0x7tdeg" # make into a secret
   network   = "juned"
 }

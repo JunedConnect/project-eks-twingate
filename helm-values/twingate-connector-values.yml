@@ -1,0 +1,8 @@
+connector:
+  network:
+  url: # default is twingate.com
+  accessToken:
+  refreshToken:
+  existingSecret:
+  loglevel:: debug# default is error
+  dnsServer:
