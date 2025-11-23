@@ -1,0 +1,33 @@
+apiVersion: twingate.com/v1beta
+kind: TwingateConnector
+metadata:
+  name: kubernetes-connector-2
+  namespace: tg
+spec:
+  name: kubernetes-connector-2
+
+---
+
+apiVersion: twingate.com/v1beta
+kind: TwingateResource
+metadata:
+  name: kubernetes-all-2
+  namespace: tg
+spec:
+  name: kubernetes-all-2
+  address: "*.cluster.local"
+
+---
+
+apiVersion: twingate.com/v1beta
+kind: TwingateResourceAccess
+metadata:
+  name: kubernetes-all-2-access
+  namespace: tg
+spec:
+  resourceRef:
+    name: kubernetes-all-2
+    namespace: tg
+  principalExternalRef:
+    type: group
+    name: Everyone
