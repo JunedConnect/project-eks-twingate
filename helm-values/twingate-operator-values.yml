@@ -1,8 +1,8 @@
 # Twingate operator configurations
 #
 # **Required**: you have to specify `network` and
-#  - either `apiKey` or `existingAPIKeySecret`
-#  - either `remoteNetworkId`, `remoteNetworkName` or `existingRemoteNetworkIdSecret`
+#  1) either `apiKey` or `existingAPIKeySecret`
+#  2) either `remoteNetworkId`, `remoteNetworkName` or `existingRemoteNetworkIdSecret`
 twingateOperator: {} # default is {}
 #  apiKey: "<api key>"
 #  existingAPIKeySecret:
