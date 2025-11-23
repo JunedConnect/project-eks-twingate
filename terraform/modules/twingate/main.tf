@@ -47,7 +47,13 @@ resource "twingate_remote_network" "aws" {
   location = "AWS"
 }
 
+resource "twingate_remote_network" "eks" {
+  name = "eks-network"
+  location = "OTHER"
+}
+
 resource "twingate_connector" "aws_ec2" {
+  name = "aws-ec2-connector"
   remote_network_id = twingate_remote_network.aws.id
 }
 
@@ -95,4 +101,21 @@ resource "aws_instance" "twingate_connector" {
     } > /etc/twingate/connector.conf
     sudo systemctl enable --now twingate-connector
   EOT
+}
+
+
+# kubernetes connector and resource below (only use if you want to use the twingate connector helm chart)
+
+resource "twingate_connector" "kubernetes" {
+  name = "kubernetes-connector-1"
+  remote_network_id = twingate_remote_network.eks.id
+}
+
+resource "twingate_resource" "kubernetes_all" {
+  name               = "kubernetes-all-1"
+  remote_network_id  = twingate_remote_network.eks.id
+  address            = "*.cluster.local"
+  access_group {
+    group_id = var.twingate_access_group_id
+  }
 }

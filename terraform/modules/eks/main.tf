@@ -32,46 +32,20 @@ resource "aws_eks_cluster" "this" {
 
 }
 
-resource "aws_eks_addon" "metrics-server" {
-  cluster_name = var.name
-  addon_name = "metrics-server"
-  addon_version = "v0.8.0-eksbuild.2"
-  resolve_conflicts_on_create = "OVERWRITE"
-
-  depends_on = [
-    aws_eks_cluster.this,
-    aws_eks_node_group.this
-  ]
-}
-
-resource "aws_eks_addon" "eks-node-monitoring-agent" {
-  cluster_name = var.name
-  addon_name = "eks-node-monitoring-agent"
-  addon_version = "v1.4.1-eksbuild.1"
-  resolve_conflicts_on_create = "OVERWRITE"
-
-  depends_on = [
-    aws_eks_cluster.this,
-    aws_eks_node_group.this
-  ]
+resource "aws_vpc_security_group_ingress_rule" "eks_api_endpoint" {
+  security_group_id = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
+  description       = "Allow Inbound HTTPS connection to EKS API Endpoint"
+  
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 443
+  to_port     = 443
+  ip_protocol = "tcp"
 }
 
 resource "aws_eks_addon" "eks-pod-identity-agent" {
   cluster_name = var.name
   addon_name = "eks-pod-identity-agent"
   addon_version = "v1.3.9-eksbuild.3"
-  
-  depends_on = [
-    aws_eks_cluster.this,
-    aws_eks_node_group.this
-  ]
-}
-
-resource "aws_eks_addon" "coredns" {
-  cluster_name                = var.name
-  addon_name                  = "coredns"
-  addon_version               = "v1.12.3-eksbuild.1"
-  resolve_conflicts_on_create = "OVERWRITE"
   
   depends_on = [
     aws_eks_cluster.this,
@@ -102,7 +76,6 @@ resource "aws_iam_role_policy_attachment" "cluster-attachment-policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks-cluster-role.name
 }
-
 
 resource "aws_eks_node_group" "this" {
   cluster_name    = aws_eks_cluster.this.name
