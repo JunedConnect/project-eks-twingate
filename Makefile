@@ -1,4 +1,4 @@
-.PHONY: help setup-operator setup-connector upgrade-operator upgrade-connector destroy-operator destroy-connector
+.PHONY: help setup-operator setup-connector destroy-operator destroy-connector
 
 # the below lines are used to include the .env file and export the variables
 -include .env
@@ -8,8 +8,6 @@ help:
 	@echo "Available commands:"
 	@echo "  make setup-operator          	- Install Twingate Operator on EKS cluster"
 	@echo "  make setup-connector         	- Install Twingate Connector on EKS cluster"
-	@echo "  make upgrade-operator        	- Upgrade Twingate Operator Helm release"
-	@echo "  make upgrade-connector       	- Upgrade Twingate Connector Helm release"
 	@echo "  make destroy-operator        	- Uninstall Twingate Operator"
 	@echo "  make destroy-connector       	- Uninstall Twingate Connector"
 
@@ -22,19 +20,20 @@ setup-operator:
 	helm repo add twingate https://twingate.github.io/helm-charts || true
 	
 	@echo "\n Installing Twingate Operator..."
-	helm install twop oci://ghcr.io/twingate/helmcharts/twingate-operator \
+	@helm install twop oci://ghcr.io/twingate/helmcharts/twingate-operator \
 		--version $(TWINGATE_OPERATOR_VERSION) \
 		--namespace tg \
 		--values helm-values/twingate-operator-values.yml \
 		--set twingateOperator.network=$(TWINGATE_NETWORK) \
-		--set twingateOperator.apiKey=$(TWINGATE_API_KEY) \
-		--set twingateOperator.remoteNetworkName=$(TWINGATE_REMOTE_NETWORK_NAME)
+		--set twingateOperator.apiKey=$(TWINGATE_API_TOKEN) \
+		--set twingateOperator.remoteNetworkName=$(TWINGATE_REMOTE_NETWORK_NAME) \
+		--set kubernetes-access-gateway.twingate.network=$(TWINGATE_NETWORK) || (echo "\n ERROR: Failed to install Twingate Operator!" && exit 1)
 	
 	@echo "\n Applying Twingate resources..."
-	kubectl apply -f twingate-resources.yml
+	@kubectl apply -f twingate-resources.yml || (echo "\n ERROR: Failed to apply Twingate resources!" && exit 1)
 	
-	@echo "\n Applying test whoami application..."
-	kubectl apply -f test-whoami.yml
+	@echo "\n Applying whoami application..."
+	@kubectl apply -f test-whoami.yml || (echo "\n ERROR: Failed to apply whoami application!" && exit 1)
 	
 	@echo "\n Setup complete! Twingate Operator is ready."
 	@echo "To verify installation:"
@@ -48,50 +47,33 @@ setup-connector:
 	helm repo add twingate https://twingate.github.io/helm-charts || true
 	
 	@echo "\n Installing Twingate Connector..."
-	helm install twingate-connector twingate/connector \
+	@helm install twingate-connector twingate/connector \
 		--version $(TWINGATE_CONNECTOR_VERSION) \
 		--namespace tg \
 		--values helm-values/twingate-connector-values.yml \
 		--set connector.network=$(TWINGATE_NETWORK) \
 		--set connector.accessToken=$(KUBERNETES_CONNECTOR_ACCESS_TOKEN) \
-		--set connector.refreshToken=$(KUBERNETES_CONNECTOR_REFRESH_TOKEN)
+		--set connector.refreshToken=$(KUBERNETES_CONNECTOR_REFRESH_TOKEN) || (echo "\n ERROR: Failed to install Twingate Connector!" && exit 1)
 	
-	@echo "\n Applying test whoami application..."
-	kubectl apply -f test-whoami.yml
+	@echo "\n Applying whoami application..."
+	@kubectl apply -f test-whoami.yml || (echo "\n ERROR: Failed to apply whoami application!" && exit 1)
 	
 	@echo "\n Setup complete! Twingate Connector is ready."
 	@echo "To verify installation:"
 	@echo "  kubectl get pods -n twingate"
 
-upgrade-operator:
-	@echo "\n Upgrading Twingate Operator..."
-	helm upgrade twop oci://ghcr.io/twingate/helmcharts/twingate-operator \
-		--version $(TWINGATE_OPERATOR_VERSION) \
-		--namespace tg \
-		--values helm-values/twingate-operator-values.yml \
-		--set twingateOperator.network=$(TWINGATE_NETWORK) \
-		--set twingateOperator.apiKey=$(TWINGATE_API_KEY) \
-		--set twingateOperator.remoteNetworkName=$(TWINGATE_REMOTE_NETWORK_NAME)
-	@echo "\n Upgrade complete!"
-
-upgrade-connector:
-	@echo "\n Upgrading Twingate Connector..."
-	helm upgrade twingate-connector twingate/connector \
-		--version $(TWINGATE_CONNECTOR_VERSION) \
-		--namespace tg \
-		--values helm-values/twingate-connector-values.yml \
-		--set connector.network=$(TWINGATE_NETWORK) \
-		--set connector.accessToken=$(KUBERNETES_CONNECTOR_ACCESS_TOKEN) \
-		--set connector.refreshToken=$(KUBERNETES_CONNECTOR_REFRESH_TOKEN)
-	
-	@echo "\n Upgrade complete!"
-
 destroy-operator:
+	@echo "Removing Twingate resources..."
+	@kubectl delete -f twingate-resources.yml || true
+	@echo "Removing test application..."
+	@kubectl delete -f test-whoami.yml || true
 	@echo "Uninstalling Twingate Operator..."
-	helm uninstall twop -n tg || true
-	@echo "\n Twingate Operator chart has been removed."
+	@helm uninstall twop -n tg || (echo "\n ERROR: Failed to uninstall Twingate Operator!" && exit 1)
+	@echo "\n Twingate Operator and resources have been removed."
 
 destroy-connector:
+	@echo "Removing test application..."
+	@kubectl delete -f test-whoami.yml || true
 	@echo "Uninstalling Twingate Connector..."
-	helm uninstall twingate-connector -n tg || true
-	@echo "\n Twingate Connector chart has been removed."
+	@helm uninstall twingate-connector -n tg || (echo "\n ERROR: Failed to uninstall Twingate Connector!" && exit 1)
+	@echo "\n Twingate Connector and resources have been removed."
