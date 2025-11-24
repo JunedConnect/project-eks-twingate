@@ -42,17 +42,6 @@ resource "aws_vpc_security_group_ingress_rule" "eks_api_endpoint" {
   ip_protocol = "tcp"
 }
 
-resource "aws_eks_addon" "eks-pod-identity-agent" {
-  cluster_name = var.name
-  addon_name = "eks-pod-identity-agent"
-  addon_version = "v1.3.9-eksbuild.3"
-  
-  depends_on = [
-    aws_eks_cluster.this,
-    aws_eks_node_group.this
-  ]
-}
-
 resource "aws_iam_role" "eks-cluster-role" {
   name = var.eks_cluster_role_name
   assume_role_policy = jsonencode({
