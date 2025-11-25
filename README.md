@@ -72,18 +72,22 @@ After creating your Twingate network, update these configuration values:
 
 **Terraform Provider** (set environment variables):
 - `TWINGATE_API_TOKEN` - Twingate API token
-- `TWINGATE_NETWORK` - Twingate network slug
+- `TWINGATE_NETWORK` - Twingate network name
 
 **Environment Variables** (`.env` file):
-- `TWINGATE_NETWORK`, `TWINGATE_API_TOKEN`, `TWINGATE_REMOTE_NETWORK_NAME`
-- `TWINGATE_OPERATOR_VERSION`, `TWINGATE_CONNECTOR_VERSION`
-- `KUBERNETES_CONNECTOR_ACCESS_TOKEN`, `KUBERNETES_CONNECTOR_REFRESH_TOKEN` (for Helm Connector Chart ONLY, see below)
+- `TWINGATE_NETWORK` - Twingate network name
+- `TWINGATE_API_TOKEN` - Twingate API token
+
+**Note for `.env` file**: 
+- Only `TWINGATE_NETWORK` and `TWINGATE_API_TOKEN` need to be filled in.
+- `TWINGATE_OPERATOR_VERSION` and `TWINGATE_CONNECTOR_VERSION` are already set.
+- `KUBERNETES_CONNECTOR_ACCESS_TOKEN` and `KUBERNETES_CONNECTOR_REFRESH_TOKEN` are only required for Option B (Connector installation).
 
 <br>
 
 ## How to Deploy
 
-**Prerequisites**:
+## **Prerequisites**:
 - Terraform
 - kubectl
 - Helm
@@ -108,7 +112,7 @@ After creating your Twingate network, update these configuration values:
 
 <br>
 
-   **Option A: Operator** (Recommended - Kubernetes-native):
+## **Option A: Operator** (Recommended - Kubernetes-native):
    ```bash
    make setup-operator
    ```
@@ -128,7 +132,7 @@ After creating your Twingate network, update these configuration values:
 
 <br>
 
-   **Option B: Connector** (More Manual):
+## **Option B: Connector** (More Manual):
    1. After Terraform creates the connector `kubernetes-connector-1` within the 'aws-network' remote network, get the tokens from Twingate Console:
       - Go to Connectors → Select `kubernetes-connector-1` → Get tokens
    2. Add tokens to your `.env` file:
@@ -167,10 +171,23 @@ cd terraform && terraform destroy  # Remove Infrastructure
 
 ## Now the Why
 
+**EKS Cluster Network Architecture**:
+The EKS cluster is deployed in private subnets within the AWS VPC, meaning the cluster API endpoint is not directly accessible from the internet. To authenticate with the EKS API endpoint and access the cluster, you need a connector deployed on the AWS VPC network. This is why the **AWS EC2 Connector** (`aws-ec2-connector`) is required — it runs on EC2 instances within the same VPC as the EKS cluster, allowing you to reach the private API endpoint.
+
+<br>
+
 **Dual Connector Architecture**:
 This project uses two separate connectors for proper routing:
-- **AWS EC2 Connector** (`aws-ec2-connector`): Deployed on EC2 instances, handles AWS network resources (e.g., EKS API endpoint) communication. Associated with the `aws-network` remote network.
+- **AWS EC2 Connector** (`aws-ec2-connector`): Deployed on EC2 instances within the AWS VPC, handles AWS network resources (e.g., EKS API endpoint) communication. Associated with the `aws-network` remote network.
 - **Kubernetes Connector** (`kubernetes-connector-1/2`): Deployed within the cluster, handles Kubernetes internal resources communication (services, pods). Associated with the `eks-network` remote network.
+
+**Why separate connectors?** Each connector is optimised for its network context. The EC2 connector handles AWS-level resources, whilst the Kubernetes connector understands cluster DNS resolution (`*.cluster.local`). This separation prevents routing conflicts and DNS resolution failures.
+
+<br>
+
+**API Endpoint vs Internal Cluster Resources**:
+- **EKS API Endpoint Communication**: Accessing the cluster API (for `kubectl` commands) requires connectivity to the EKS API endpoint, which is a VPC-level resource. This is handled by the AWS EC2 Connector, which is on the same VPC network and can reach the private API endpoint.
+- **Internal Cluster Resources**: Accessing Kubernetes services and pods (e.g., `whoami.whoami.svc.cluster.local`) requires DNS resolution within the cluster's internal network. This is handled by the Kubernetes Connector, which runs inside the cluster and understands Kubernetes DNS resolution (`*.cluster.local`).
 
 <br>
 
@@ -212,3 +229,16 @@ To check if Helm values have been applied properly:
 helm get values twop -n tg          # For Operator
 helm get values twingate-connector -n tg  # For Connector
 ```
+
+**Option A: Switching to Twingate Context**:
+If you're unable to switch to the Twingate kubeconfig context or the context is not appearing:
+1. Check Twingate client logs to verify if it was able to update your kubeconfig
+2. Ensure "Sync Kubernetes Configuration" is enabled in your Twingate client settings
+3. Verify the Kubernetes Access Gateway resource is created and accessible:
+   ```bash
+   kubectl get twingateresources -n tg
+   ```
+4. Check if the context exists in your kubeconfig:
+   ```bash
+   kubectl config get-contexts
+   ```

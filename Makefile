@@ -26,7 +26,7 @@ setup-operator:
 		--values helm-values/twingate-operator-values.yml \
 		--set twingateOperator.network=$(TWINGATE_NETWORK) \
 		--set twingateOperator.apiKey=$(TWINGATE_API_TOKEN) \
-		--set twingateOperator.remoteNetworkName=$(TWINGATE_REMOTE_NETWORK_NAME) \
+		--set twingateOperator.remoteNetworkName=eks-network \
 		--set kubernetes-access-gateway.twingate.network=$(TWINGATE_NETWORK) || (echo "\n ERROR: Failed to install Twingate Operator!" && exit 1)
 	
 	@echo "\n Applying Twingate resources..."
