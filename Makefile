@@ -50,7 +50,6 @@ setup-connector:
 	@helm install twingate-connector twingate/connector \
 		--version $(TWINGATE_CONNECTOR_VERSION) \
 		--namespace tg \
-		--values helm-values/twingate-connector-values.yml \
 		--set connector.network=$(TWINGATE_NETWORK) \
 		--set connector.accessToken=$(KUBERNETES_CONNECTOR_ACCESS_TOKEN) \
 		--set connector.refreshToken=$(KUBERNETES_CONNECTOR_REFRESH_TOKEN) || (echo "\n ERROR: Failed to install Twingate Connector!" && exit 1)
