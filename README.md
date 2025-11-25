@@ -31,7 +31,9 @@ This architecture leverages **Twingate's Zero Trust model** with connectors depl
 
 <br>
 
-## Prerequisites: Create Twingate Network
+## Prerequisites
+
+### Create Twingate Network
 
 Before configuring the project, you need to create a Twingate network:
 
@@ -58,7 +60,7 @@ Before configuring the project, you need to create a Twingate network:
 
 <br>
 
-## Configuration Dependencies
+### Configuration Dependencies
 
 After creating your Twingate network, update these configuration values:
 
