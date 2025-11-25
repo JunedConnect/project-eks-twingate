@@ -21,10 +21,10 @@ This architecture leverages **Twingate's Zero Trust model** with connectors depl
 ```
 ./
 ├── terraform/                    # Infrastructure as Code
-│   ├── modules/twingate/         # Twingate resources module
-│   └── [terraform files]
+│   ├── modules/                  # Terraform modules
+│   └── [terraform files]         # Root Terraform (.tf) files
 ├── helm-values/                  # Helm chart values
-├── twingate-resources.yml        # Twingate CRDs (for Operator)
+├── twingate-resources.yml        # Twingate CRDs (for Twingate Operator Installation Option)
 ├── test-whoami.yml               # Test application
 └── Makefile                      # Automation commands
 ```
@@ -151,10 +151,6 @@ Once connected via Twingate client, access resources using DNS names:
 
 <br>
 
-
-
-<br>
-
 ## Cleanup
 
 ```bash
@@ -174,20 +170,23 @@ This project uses two separate connectors for proper routing:
 - **AWS EC2 Connector** (`aws-ec2-connector`): Deployed on EC2 instances, handles AWS network resources (e.g., EKS API endpoint) communication. Associated with the `aws-network` remote network.
 - **Kubernetes Connector** (`kubernetes-connector-1/2`): Deployed within the cluster, handles Kubernetes internal resources communication (services, pods). Associated with the `eks-network` remote network.
 
+<br>
+
 ### Option A vs Option B: Functional Differences
 
 **Option A (Operator)**:
+- **Advanced option**: Provides `kubectl` access and Twingate group-based Kubernetes permissions
 - **Kubernetes-native management**: Uses Custom Resource Definitions (CRDs) to manage Twingate resources declaratively
-- **Kubernetes Access Gateway**: Automatically provides secure `kubectl` access to the cluster through Twingate
 - **Automated resource management**: Resources defined in `twingate-resources.yml` are automatically synced to Twingate
+- **Kubernetes Access Gateway**: Adds a kubeconfig context to your kubeconfig that allows you to authenticate to the cluster as your Twingate user identity. This enables you to access the cluster API through the Kubernetes Access Gateway instead of the AWS EC2 connector, providing secure `kubectl` access through Twingate
 - **RBAC integration**: Links Twingate groups with Kubernetes RBAC via ClusterRoleBindings, keeping access permissions in sync. This integration is specifically for the Kubernetes Access Gateway, allowing Twingate group membership to automatically map to Kubernetes ClusterRoles
 
 **Option B (Connector)**:
 - **Basic cluster connectivity**: A simpler, more basic version of Option A that simply allows connection to resources inside the cluster itself
 - **Manual resource creation**: Requires manually creating the Twingate connector and Twingate resources (in this project, Terraform handles this automatically)
-- **Network connectivity only**: Provides secure access to Kubernetes services and pods via DNS
 - **Manual token management**: Requires retrieving and managing connector tokens from Twingate Console
-- **No Kubernetes Access Gateway**: Does not provide `kubectl` access to the cluster API
+- **No Kubernetes Access Gateway**: You only have access to the cluster via the EKS API endpoint through the AWS EC2 connector (`aws-ec2-connector`)
+- **No RBAC integration**: The Kubernetes Access Gateway and RBAC integration are linked features that work together to control cluster access based on Twingate groups. Option B does not include these features, so you cannot use Twingate groups to manage Kubernetes permissions (and vice versa)
 
 <br>
 
