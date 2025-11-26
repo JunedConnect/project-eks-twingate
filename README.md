@@ -42,12 +42,12 @@ Before configuring the project, you need to create a Twingate network:
 
 1. **Create a Network**: 
    - In Twingate Console, create a new network
-   - Note the name of your **network** (appears in your Twingate URL: `https://<network>.twingate.com`)
+   - Note the name of your network (appears in your Twingate URL: `https://<network>.twingate.com`)
 
 2. **Get Required Information**:
    - **Network Name**: From your Twingate URL
-   - **API Key**: Settings → API Keys → Create new API key (Sensitive: DO NOT SHARE)
-   - **Access Group ID**: Team → Groups → Select group "Everyone" → Note the Group ID (appears in your Twingate URL: `https://<network>.twingate.com/groups/<access-group-id`)
+   - **API Token**: Settings → API Keys → Create new API key (Sensitive: DO NOT SHARE)
+   - **Access Group ID**: Team → Groups → Select group `Everyone` → Note the Group ID (appears in your Twingate URL: `https://<network>.twingate.com/groups/<access-group-id>`)
 
 3. **Install Twingate Client**:
    - Download and install the Twingate client for your operating system
@@ -56,8 +56,8 @@ Before configuring the project, you need to create a Twingate network:
 <br>
 
 **Note**: Terraform will automatically create two separate remote networks:
-- **aws-network** - For EC2-based connectors (handles AWS network resources)
-- **eks-network** - For Kubernetes connectors (handles kubernetes netowrk resources)
+- `aws-network` - For EC2-based connectors (handles AWS network resources)
+- `eks-network` - For Kubernetes connectors (handles Kubernetes network resources)
 
 **Important**: Separate remote networks are required to ensure proper routing. Without them, Twingate may route traffic to the wrong connector, causing DNS resolution failures for Kubernetes services.
 
@@ -82,9 +82,9 @@ After creating your Twingate network, update these configuration values:
 - `TWINGATE_API_TOKEN` - Twingate API token
 
 **Note for `.env` file**: 
-- Only `TWINGATE_NETWORK` and `TWINGATE_API_TOKEN` need to be filled in.
-- `TWINGATE_OPERATOR_VERSION` and `TWINGATE_CONNECTOR_VERSION` are already set.
-- `KUBERNETES_CONNECTOR_ACCESS_TOKEN` and `KUBERNETES_CONNECTOR_REFRESH_TOKEN` are only required for Option B (Connector installation).
+- Only `TWINGATE_NETWORK` and `TWINGATE_API_TOKEN` need to be filled in
+- `TWINGATE_OPERATOR_VERSION` and `TWINGATE_CONNECTOR_VERSION` are already set
+- `KUBERNETES_CONNECTOR_ACCESS_TOKEN` and `KUBERNETES_CONNECTOR_REFRESH_TOKEN` are only required for Option B (Connector installation)
 
 <br>
 
@@ -110,6 +110,7 @@ After creating your Twingate network, update these configuration values:
    ```bash
    aws eks update-kubeconfig --name <cluster-name> --region eu-west-2
    ```
+   Replace `<cluster-name>` with your actual cluster name.
 
 3. **Install Twingate** (choose one):
 
@@ -120,7 +121,7 @@ After creating your Twingate network, update these configuration values:
    ```bash
    make setup-operator
    ```
-   Manages resources via CRDs. Automatically applies Twingate resources i.e.`twingate-resources.yml`.
+   Manages resources via CRDs. Automatically applies Twingate resources (e.g., `twingate-resources.yml`).
    
    **Connecting to Cluster via Kubernetes Access Gateway**:
    The Operator automatically creates a Kubernetes Access Gateway resource. To connect:
@@ -132,13 +133,13 @@ After creating your Twingate network, update these configuration values:
       ```
    4. You can now use `kubectl` commands to access the cluster through Twingate
 
-   **Note**: By default, the gateway context is assigned the `view` ClusterRole (read-only access). To change permissions, update the ClusterRoleBinding resource in `twingate-resources.yml`.
+   **Note**: By default, the gateway context is assigned the `view` ClusterRole (read-only access). To change permissions, update the `ClusterRoleBinding` resource in `twingate-resources.yml`.
 
 <br>
 
 ### Option B: Connector (More Manual):
 
-   1. After Terraform creates the connector `kubernetes-connector-1` within the 'aws-network' remote network, get the tokens from Twingate Console:
+   1. After Terraform creates the connector `kubernetes-connector-1` within the `eks-network` remote network, get the tokens from Twingate Console:
       - Go to Connectors → Select `kubernetes-connector-1` → Get tokens
    2. Add tokens to your `.env` file:
       ```bash
@@ -178,15 +179,15 @@ cd terraform && terraform destroy  # Remove Infrastructure
 
 **EKS Cluster Network Architecture**:
 
-The EKS cluster is deployed in private subnets within the AWS VPC, meaning the cluster API endpoint is not directly accessible from the internet. To authenticate with the EKS API endpoint and access the cluster, you need a connector deployed on the AWS VPC network. This is why the **AWS EC2 Connector** (`aws-ec2-connector`) is required — it runs on EC2 instances within the same VPC as the EKS cluster, allowing you to reach the private API endpoint.
+The EKS cluster is deployed in private subnets within the AWS VPC, meaning the cluster API endpoint is not directly accessible from the internet. To authenticate with the EKS API endpoint and access the cluster, you need a connector deployed on the AWS VPC network. This is why the **AWS EC2 Connector** (`aws-ec2-connector`) is required - it runs on EC2 instances within the same VPC as the EKS cluster, allowing you to reach the private API endpoint.
 
 <br>
 
 **Dual Connector Architecture**:
 
 This project uses two separate connectors for proper routing:
-- **AWS EC2 Connector** (`aws-ec2-connector`): Deployed on EC2 instances within the AWS VPC, handles AWS network resources (e.g., EKS API endpoint) communication. Associated with the `aws-network` remote network.
-- **Kubernetes Connector** (`kubernetes-connector-1/2`): Deployed within the cluster, handles Kubernetes internal resources communication (services, pods). Associated with the `eks-network` remote network.
+- **AWS EC2 Connector** (`aws-ec2-connector`): Deployed on EC2 instances within the AWS VPC, handles AWS network resources (e.g., EKS API endpoint) communication. Associated with the `aws-network` remote network
+- **Kubernetes Connector** (`kubernetes-connector-1/2`): Deployed within the cluster, handles Kubernetes internal resources communication (services, pods). Associated with the `eks-network` remote network
 
 **Why separate connectors?**
 
@@ -200,13 +201,13 @@ Each connector is optimised for its network context. The EC2 connector handles A
 
 <br>
 
-### Option A/B - Functional Differences
+### Option A vs Option B: Functional Differences
 
 **Option A (Operator)**:
 - **Advanced option**: Provides `kubectl` access and Twingate group-based Kubernetes permissions
 - **Kubernetes-native management**: Uses Custom Resource Definitions (CRDs) to manage Twingate resources declaratively
 - **Automated resource management**: Resources defined in `twingate-resources.yml` are automatically synced to Twingate
-- **Kubernetes Access Gateway**: Adds a kubeconfig context to your kubeconfig that allows you to authenticate to the cluster as your Twingate user identity. This enables you to access the cluster API through the Kubernetes Access Gateway instead of the AWS EC2 connector, providing secure `kubectl` access through Twingate
+- **Kubernetes Access Gateway**: Adds a kubeconfig context to your kubeconfig that allows you to authenticate to the cluster as your Twingate user identity. This enables you to access the cluster API through the Kubernetes Access Gateway instead of the AWS EC2 connector (`aws-ec2-connector`), providing secure `kubectl` access through Twingate
 - **RBAC integration**: Links Twingate groups with Kubernetes RBAC via ClusterRoleBindings, keeping access permissions in sync. This integration is specifically for the Kubernetes Access Gateway, allowing Twingate group membership to automatically map to Kubernetes ClusterRoles
 
 **Option B (Connector)**:
@@ -221,7 +222,7 @@ Each connector is optimised for its network context. The EC2 connector handles A
 ## Troubleshooting
 
 **DNS Resolution Failures**:
-- Verify separate remote networks (AWS / EKS)
+- Verify separate remote networks (`aws-network` / `eks-network`)
 - Check connectors are on correct remote network
 - Verify resources associated with correct network
 
