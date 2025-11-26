@@ -9,6 +9,27 @@ This architecture leverages **Twingate's Zero Trust model** with connectors depl
 
 <br>
 
+## Table of Contents
+
+- [Directory Structure](#directory-structure)
+- [Prerequisites](#prerequisites)
+  - [Create Twingate Network](#create-twingate-network)
+  - [Configuration Dependencies](#configuration-dependencies)
+- [How to Deploy](#how-to-deploy)
+  - [Option A: Operator](#option-a-operator-recommended---kubernetes-native)
+  - [Option B: Connector](#option-b-connector-more-manual)
+- [Accessing Kubernetes Resources](#accessing-kubernetes-resources)
+- [Cleanup](#cleanup)
+- [Now the Why](#now-the-why)
+  - [Option A vs Option B: Functional Differences](#option-a-vs-option-b-functional-differences)
+- [Troubleshooting](#troubleshooting)
+- [Resource Link](#resource-link)
+  - [Secure Access to EKS Kubernetes API Endpoint](#secure-access-to-eks-kubernetes-api-endpoint)
+  - [Secure Access to Internal Kubernetes Cluster Resources (Option A)](#secure-access-to-internal-kubernetes-cluster-resources-option-a)
+  - [Secure Access to Internal Kubernetes Cluster Resources (Option B)](#secure-access-to-internal-kubernetes-cluster-resources-option-b)
+
+<br>
+
 ## Directory Structure
 
 ```
