@@ -31,3 +31,32 @@ spec:
   principalExternalRef:
     type: group
     name: Everyone
+
+---
+
+apiVersion: twingate.com/v1beta
+kind: TwingateResourceAccess
+metadata:
+  name: twingate-gateway-access
+  namespace: tg
+spec:
+  resourceRef:
+    name: twop-kubernetes-access-gateway-resource
+    namespace: tg
+  principalExternalRef:
+    type: group
+    name: Everyone
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: twingate-gateway-group-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+  - kind: Group
+    name: Everyone
