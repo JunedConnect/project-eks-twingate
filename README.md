@@ -1,11 +1,8 @@
-# Twin Trust
+# <img src="https://raw.githubusercontent.com/JunedConnect/project-eks-twingate/main/images/twingate-logo.png" alt="Twingate Logo" width="40" height="40"> Twin Trust
 
 The project demonstrates a **Zero Trust Network Access (ZTNA) implementation** using **Twingate** to provide secure access to an Amazon EKS cluster and its internal resources. This setup enables secure, identity-based access to Kubernetes services and pods without exposing them to the public internet.
 
 This architecture leverages **Twingate's Zero Trust model** with connectors deployed on EC2 instances and within the Kubernetes cluster. **Zero Trust** is a security model based on the principle of "never trust, always verify" - **every access request** is authenticated and authorised based on user identity, regardless of network location.
-
-
-![Logo](https://raw.githubusercontent.com/JunedConnect/project-eks-twingate/main/images/twingate-logo.png)
 
 <br>
 
