@@ -175,16 +175,20 @@ cd terraform && terraform destroy  # Remove Infrastructure
 ## Now the Why
 
 **EKS Cluster Network Architecture**:
+
 The EKS cluster is deployed in private subnets within the AWS VPC, meaning the cluster API endpoint is not directly accessible from the internet. To authenticate with the EKS API endpoint and access the cluster, you need a connector deployed on the AWS VPC network. This is why the **AWS EC2 Connector** (`aws-ec2-connector`) is required — it runs on EC2 instances within the same VPC as the EKS cluster, allowing you to reach the private API endpoint.
 
 <br>
 
 **Dual Connector Architecture**:
+
 This project uses two separate connectors for proper routing:
 - **AWS EC2 Connector** (`aws-ec2-connector`): Deployed on EC2 instances within the AWS VPC, handles AWS network resources (e.g., EKS API endpoint) communication. Associated with the `aws-network` remote network.
 - **Kubernetes Connector** (`kubernetes-connector-1/2`): Deployed within the cluster, handles Kubernetes internal resources communication (services, pods). Associated with the `eks-network` remote network.
 
-**Why separate connectors?** Each connector is optimised for its network context. The EC2 connector handles AWS-level resources, whilst the Kubernetes connector understands cluster DNS resolution (`*.cluster.local`). This separation prevents routing conflicts and DNS resolution failures.
+**Why separate connectors?**
+
+Each connector is optimised for its network context. The EC2 connector handles AWS-level resources, whilst the Kubernetes connector understands cluster DNS resolution (`*.cluster.local`). This separation prevents routing conflicts and DNS resolution failures.
 
 <br>
 
@@ -194,7 +198,7 @@ This project uses two separate connectors for proper routing:
 
 <br>
 
-### Option A vs Option B: Functional Differences
+### Option A/B - Functional Differences
 
 **Option A (Operator)**:
 - **Advanced option**: Provides `kubectl` access and Twingate group-based Kubernetes permissions
@@ -215,7 +219,7 @@ This project uses two separate connectors for proper routing:
 ## Troubleshooting
 
 **DNS Resolution Failures**:
-- Verify separate remote networks (AWS vs EKS)
+- Verify separate remote networks (AWS / EKS)
 - Check connectors are on correct remote network
 - Verify resources associated with correct network
 
@@ -254,6 +258,8 @@ If you're unable to switch to the Twingate kubeconfig context or the context is 
 https://www.twingate.com/docs/k8s-kubectl
 https://www.twingate.com/docs/terraform-aws
 
+<br>
+
 ### Secure Access to Internal Kubernetes Cluster Resources (Option A)
 
 https://www.twingate.com/docs/k8s-private-services
@@ -265,6 +271,8 @@ https://github.com/Twingate/kubernetes-operator/wiki/Getting-Started
 https://github.com/Twingate/kubernetes-access-gateway?tab=readme-ov-file
 https://github.com/Twingate/kubernetes-access-gateway/wiki/Quick-Start-Guide
 https://github.com/Twingate/kubernetes-access-gateway/wiki/Installation
+
+<br>
 
 ### Secure Access to Internal Kubernetes Cluster Resources (Option B)
 
