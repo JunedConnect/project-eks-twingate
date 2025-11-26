@@ -24,9 +24,6 @@ This architecture leverages **Twingate's Zero Trust model** with connectors depl
   - [Option A vs Option B: Functional Differences](#option-a-vs-option-b-functional-differences)
 - [Troubleshooting](#troubleshooting)
 - [Resource Link](#resource-link)
-  - [Secure Access to EKS Kubernetes API Endpoint](#secure-access-to-eks-kubernetes-api-endpoint)
-  - [Secure Access to Internal Kubernetes Cluster Resources (Option A)](#secure-access-to-internal-kubernetes-cluster-resources-option-a)
-  - [Secure Access to Internal Kubernetes Cluster Resources (Option B)](#secure-access-to-internal-kubernetes-cluster-resources-option-b)
 
 <br>
 
@@ -269,13 +266,12 @@ If you're unable to switch to the Twingate kubeconfig context or the context is 
 
 ## Resource Link
 
-### Secure Access to EKS Kubernetes API Endpoint
+**Secure Access to EKS Kubernetes API Endpoint**
 https://www.twingate.com/docs/k8s-kubectl
 https://www.twingate.com/docs/terraform-aws
 
-<br>
 
-### Secure Access to Internal Kubernetes Cluster Resources (Option A)
+**Secure Access to Internal Kubernetes Cluster Resources (Option A)**
 
 https://www.twingate.com/docs/k8s-private-services
 
@@ -287,9 +283,8 @@ https://github.com/Twingate/kubernetes-access-gateway?tab=readme-ov-file
 https://github.com/Twingate/kubernetes-access-gateway/wiki/Quick-Start-Guide
 https://github.com/Twingate/kubernetes-access-gateway/wiki/Installation
 
-<br>
 
-### Secure Access to Internal Kubernetes Cluster Resources (Option B)
+**Secure Access to Internal Kubernetes Cluster Resources (Option B)**
 
 https://www.twingate.com/docs/k8s-private-services
 
