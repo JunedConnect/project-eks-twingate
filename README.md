@@ -9,15 +9,6 @@ This architecture leverages **Twingate's Zero Trust model** with connectors depl
 
 <br>
 
-## Key Features
-
-- **Twingate Operator** - Kubernetes-native resource management via CRDs
-- **Twingate Connector** - Network connectivity component for secure access
-- **Kubernetes Access Gateway** - Direct access to cluster resources via DNS
-- **Zero Trust Access** - Identity-based access without VPNs or public endpoints
-
-<br>
-
 ## Directory Structure
 
 ```
