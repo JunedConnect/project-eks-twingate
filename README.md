@@ -267,6 +267,7 @@ If you're unable to switch to the Twingate kubeconfig context or the context is 
 ## Resource Link
 
 **Secure Access to EKS Kubernetes API Endpoint**
+
 https://www.twingate.com/docs/k8s-kubectl
 https://www.twingate.com/docs/terraform-aws
 
