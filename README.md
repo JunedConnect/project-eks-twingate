@@ -90,7 +90,7 @@ After creating your Twingate network, update these configuration values:
 
 ## How to Deploy
 
-## **Prerequisites**:
+### Prerequisites:
 - Terraform
 - kubectl
 - Helm
@@ -115,7 +115,8 @@ After creating your Twingate network, update these configuration values:
 
 <br>
 
-## **Option A: Operator** (Recommended - Kubernetes-native):
+### Option A: Operator (Recommended - Kubernetes-native)
+
    ```bash
    make setup-operator
    ```
@@ -135,7 +136,8 @@ After creating your Twingate network, update these configuration values:
 
 <br>
 
-## **Option B: Connector** (More Manual):
+### Option B: Connector (More Manual):
+
    1. After Terraform creates the connector `kubernetes-connector-1` within the 'aws-network' remote network, get the tokens from Twingate Console:
       - Go to Connectors → Select `kubernetes-connector-1` → Get tokens
    2. Add tokens to your `.env` file:
