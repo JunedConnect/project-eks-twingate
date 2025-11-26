@@ -1,8 +1,11 @@
-# Twingate EKS
+# Twin Trust
 
 The project demonstrates a **Zero Trust Network Access (ZTNA) implementation** using **Twingate** to provide secure access to an Amazon EKS cluster and its internal resources. This setup enables secure, identity-based access to Kubernetes services and pods without exposing them to the public internet.
 
-This architecture leverages **Twingate's Zero Trust model** with connectors deployed on EC2 instances and within the Kubernetes cluster for redundancy. Users can access Kubernetes services and pods using their standard DNS names through the Twingate client.
+This architecture leverages **Twingate's Zero Trust model** with connectors deployed on EC2 instances and within the Kubernetes cluster. **Zero Trust** is a security model based on the principle of "never trust, always verify" - **every access request** is authenticated and authorised based on user identity, regardless of network location.
+
+
+![Logo](https://raw.githubusercontent.com/JunedConnect/project-eks-twingate/main/images/twingate-logo.png)
 
 <br>
 
@@ -11,7 +14,6 @@ This architecture leverages **Twingate's Zero Trust model** with connectors depl
 - **Twingate Operator** - Kubernetes-native resource management via CRDs
 - **Twingate Connector** - Network connectivity component for secure access
 - **Kubernetes Access Gateway** - Direct access to cluster resources via DNS
-- **Dual Connector Setup** - EC2 and Kubernetes connectors for redundancy
 - **Zero Trust Access** - Identity-based access without VPNs or public endpoints
 
 <br>
@@ -24,6 +26,7 @@ This architecture leverages **Twingate's Zero Trust model** with connectors depl
 │   ├── modules/                  # Terraform modules
 │   └── [terraform files]         # Root Terraform (.tf) files
 ├── helm-values/                  # Helm chart values
+├── .env.example                  # Example environment variables file
 ├── twingate-resources.yml        # Twingate CRDs (for Twingate Operator Installation Option)
 ├── test-whoami.yml               # Test application
 └── Makefile                      # Automation commands
@@ -242,3 +245,30 @@ If you're unable to switch to the Twingate kubeconfig context or the context is 
    ```bash
    kubectl config get-contexts
    ```
+
+<br>
+
+## Resource Link
+
+### Secure Access to EKS Kubernetes API Endpoint
+https://www.twingate.com/docs/k8s-kubectl
+https://www.twingate.com/docs/terraform-aws
+
+### Secure Access to Internal Kubernetes Cluster Resources (Option A)
+
+https://www.twingate.com/docs/k8s-private-services
+
+https://www.twingate.com/docs/kubernetes-access
+https://github.com/Twingate/kubernetes-operator
+https://github.com/Twingate/kubernetes-operator/wiki/Getting-Started
+
+https://github.com/Twingate/kubernetes-access-gateway?tab=readme-ov-file
+https://github.com/Twingate/kubernetes-access-gateway/wiki/Quick-Start-Guide
+https://github.com/Twingate/kubernetes-access-gateway/wiki/Installation
+
+### Secure Access to Internal Kubernetes Cluster Resources (Option B)
+
+https://www.twingate.com/docs/k8s-private-services
+
+https://www.twingate.com/docs/k8s-helm-chart
+https://github.com/Twingate/helm-charts/tree/master/stable/connector
