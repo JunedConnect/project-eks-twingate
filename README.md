@@ -129,6 +129,8 @@ After creating your Twingate network, update these configuration values:
    ```
    Manages resources via CRDs. Automatically applies Twingate resources (e.g., `twingate-resources.yml`).
    
+   **Note**: This option automatically creates `kubernetes-connector-2` within the `eks-network` remote network via the Twingate Operator and CRDs defined in `twingate-resources.yml`.
+   
    **Connecting to Cluster via Kubernetes Access Gateway**:
    The Operator automatically creates a Kubernetes Access Gateway resource. To connect:
    1. In your Twingate client, enable **"Sync Kubernetes Configuration"** to update your kubeconfig
