@@ -7,10 +7,10 @@ terraform {
   }
 }
 
-resource "aws_key_pair" "ec2" {
-  key_name   = "ec2-key"
-  public_key = file("~/.ssh/playground.pub")
-}
+# resource "aws_key_pair" "ec2" { # for troubleshooting purposes
+#   key_name   = "ec2-key"
+#   public_key = file("~/.ssh/playground.pub")
+# }
 
 resource "aws_security_group" "ec2_instance" { # these are the best practices for the the Twingate Connector security group (https://www.twingate.com/docs/connector-best-practices)
   name        = "twingate-ec2-connector"
