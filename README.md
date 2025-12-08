@@ -167,7 +167,7 @@ Once connected via Twingate client, access resources using DNS names:
 
 - **Services**: `<service-name>.<namespace>.svc.cluster.local`
 - **Pods**: `<pod-ip-with-dashes>.<namespace>.pod.cluster.local`
-- **StatefulSet Pods**: `<pod-name>.<service-name>.<namespace>.svc.cluster.local`
+- **StatefulSet Pods**: `<pod-name>.<service-name>.<namespace>.svc.cluster.local` (when attached to a headless service)
 
 <br>
 
